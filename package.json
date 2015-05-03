@@ -1,0 +1,33 @@
+{
+  "name": "impress-cli",
+  "version": "0.1.257",
+  "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
+  "description": "Impress Application Server Command line interface",
+  "keywords": [
+    "application",
+    "server",
+    "impress",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tshemsedinov/impress-cli.git"
+  },
+  "main": "./cli.js",
+  "bin": { "impress": "./cli.js" },
+  "dependencies": {
+    "async": "0.9.x",
+    "colors": "1.1.x",
+    "mkdirp": "0.5.x",
+    "ncp": "2.0.x"
+  },
+  "engines": {
+    "node": ">=0.10.6",
+    "iojs": ">=1.0.0"
+  },
+  "readmeFilename": "README.md",
+  "scripts": {
+    "install": "node install.js",
+    "npm": "npm link npm"
+  }
+}
