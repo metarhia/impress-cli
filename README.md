@@ -4,8 +4,8 @@ This module is a part of [Impress](https://github.com/tshemsedinov/impress) Appl
 
 ## Links
 
-  - Impress on GitHub: (https://github.com/tshemsedinov/impress)
-  - Inpress on NPM (https://www.npmjs.com/package/impress)
+  - Impress on GitHub: https://github.com/tshemsedinov/impress
+  - Inpress on NPM: https://www.npmjs.com/package/impress
 
 ## Contributors
 
