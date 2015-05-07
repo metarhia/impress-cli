@@ -31,6 +31,14 @@ var impressPath = '/impress',
 
 global.applications = [];
 
+function execute(cmd) {
+  exec(cmd, function (error, stdout, stderr) {
+    console.log(stdout);
+    if (error) console.log(error);
+    if (stderr) console.log(stderr);
+  });
+}
+
 function doExit() {
   rl.close();
 }
@@ -69,7 +77,6 @@ var commands = {
   add: function() {
 
     function doInput() {
-      console.log('+doInput');
       rl.question("Enter application name: ", function(answer) {
         if (applications.indexOf(answer) === -1) {
           applicationName = answer;
@@ -83,12 +90,11 @@ var commands = {
     }
 
     function doAdd() {
-      console.log('+doAdd');
       var applicationPath = applicationsDir + '/' + applicationName,
           applicationLink = applicationPath + '/' + 'application.link';
       fs.mkdirSync(applicationPath);
       fs.writeFileSync(applicationLink, curDir);
-      console.log('Application "' +applicationName+ '" added with link to: ' + curDir);
+      console.log('Application "' + applicationName + '" added with link to: ' + curDir);
       doExit();
     }
 
@@ -108,37 +114,37 @@ var commands = {
   },
 
   start: function() {
-    if (isWin) exec('start cmd /K "cd /d '+impressPath.replace(/\//g, '\\')+' & node server.js"' );
-    else exec('/impress/node_modules/impress/bin/impress start');
+    if (isWin) execute('start cmd /K "cd /d ' + impressPath.replace(/\//g, '\\') + ' & node server.js"' );
+    else execute('/impress/node_modules/impress/bin/impress start');
     doExit();
   },
-
+        
   stop: function() {
     if (isWin) console.log('Not implemented');
-    else exec('/impress/node_modules/impress/bin/impress stop');
+    else execute('/impress/node_modules/impress/bin/impress stop');
     doExit();
   },
 
   restart: function() {
     if (isWin) console.log('Not implemented');
-    else exec('/impress/node_modules/impress/bin/impress restart');
+    else execute('/impress/node_modules/impress/bin/impress restart');
     doExit();
   },
 
   status: function() {
     if (isWin) console.log('Not implemented');
-    else exec('/impress/node_modules/impress/bin/impress status');
+    else execute('/impress/node_modules/impress/bin/impress status');
     doExit();
   },
 
   update: function() {
-    exec('npm update');
+    execute('npm update');
     doExit();
   },
 
   autostart: function() {
-    if (parameters[1] === 'on') exec('/impress/node_modules/impress/bin/uninstall.sh');
-    else if (parameters[1] === 'off') exec('/impress/node_modules/impress/bin/install.sh');
+    if (parameters[1] === 'on') execute('/impress/node_modules/impress/bin/uninstall.sh');
+    else if (parameters[1] === 'off') execute('/impress/node_modules/impress/bin/install.sh');
     else showHelp();
     doExit();
   }
