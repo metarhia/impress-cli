@@ -2,6 +2,10 @@
 
 This module is a part of [Impress](https://github.com/tshemsedinov/impress) Application Server for [node.js](http://nodejs.org). It is not separate library and will be installed automatically when needed.
 
+[![Dependency Status](https://david-dm.org/tshemsedinov/impress-cli.svg)](https://david-dm.org/tshemsedinov/impress-cli)
+[![Codacy Badge](https://www.codacy.com/project/badge/4c2d13d88de14535889db48b25c8e054)](https://www.codacy.com/app/tshemsedinov/impress-cli)
+[![Inline docs](http://inch-ci.org/github/tshemsedinov/impress-cli.svg?branch=master)](http://inch-ci.org/github/tshemsedinov/impress-cli)
+
 ## Links
 
   - Impress on GitHub: https://github.com/tshemsedinov/impress

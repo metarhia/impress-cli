@@ -8,9 +8,9 @@ var fs = require('fs'),
     path = require('path'),
     ncp = require('ncp').ncp,
     readline = require('readline'),
-    exec = require('child_process').exec,
-    spawn = require('child_process').spawn,
-    async = require('async');
+    exec = require('child_process').exec;
+    //spawn = require('child_process').spawn,
+    //async = require('async');
 
 var isWin = !!process.platform.match(/^win/);
 
@@ -26,23 +26,29 @@ var impressPath = '/impress',
     curDir = process.cwd(),
     commandName, command,
     parameters = process.argv,
-    current = path.dirname(__filename.replace(/\\/g, '/')),
-    parent = path.basename(path.dirname(current));
+    current = path.dirname(__filename.replace(/\\/g, '/'));
+    //parent = path.basename(path.dirname(current));
 
 global.applications = [];
 
+// Execute shell command displaying output and possible errors
+//
 function execute(cmd) {
-  exec(cmd, function (error, stdout, stderr) {
+  exec(cmd, function(error, stdout, stderr) {
     console.log(stdout);
     if (error) console.log(error);
     if (stderr) console.log(stderr);
   });
 }
 
+// Release readline on exit
+//
 function doExit() {
   rl.close();
 }
 
+// Command line commands list
+//
 function showHelp() {
   console.log(
     'Syntax:\n'+
@@ -65,6 +71,8 @@ function notInstalled() {
   process.exit(0);
 }
 
+// Command line commands
+//
 var commands = {
 
   list: function() {
@@ -153,6 +161,8 @@ var commands = {
 
 console.log('Impress Application Server CLI'.bold);
 
+// Parse command line
+//
 if (!fs.existsSync(impressPath)) notInstalled();
 else {
   applications = fs.readdirSync(applicationsDir);

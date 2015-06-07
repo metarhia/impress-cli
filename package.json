@@ -1,8 +1,9 @@
 {
   "name": "impress-cli",
-  "version": "0.1.259",
+  "version": "0.1.273",
   "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
   "description": "Impress Application Server Command line interface",
+  "license": "(MIT OR RUMI)",
   "keywords": [
     "application",
     "server",
@@ -13,10 +14,14 @@
     "type": "git",
     "url": "https://github.com/tshemsedinov/impress-cli.git"
   },
+  "bugs": {
+    "url": "https://github.com/tshemsedinov/impress/issues",
+    "email": "timur.shemsedinov@gmail.com"
+  },
   "main": "./cli.js",
   "bin": { "impress": "./cli.js" },
   "dependencies": {
-    "async": "0.9.x",
+    "async": "1.2.x",
     "colors": "1.1.x",
     "mkdirp": "0.5.x",
     "ncp": "2.0.x"
@@ -29,5 +34,11 @@
   "scripts": {
     "install": "node install.js",
     "npm": "npm link npm"
+  },
+  "jshintConfig": {
+    "predef": [ "api", "impress", "db", "global", "cms", "inArray", "emptyness", "window", "navigator", "document", "frames", "escape", "localStorage", "WebSocket", "XMLHttpRequest", "EventSource" ],
+    "node": true,
+    "indent": 2,
+    "maxcomplexity": 16
   }
 }
