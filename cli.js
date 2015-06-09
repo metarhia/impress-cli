@@ -75,6 +75,8 @@ function notInstalled() {
 //
 var commands = {
 
+  // impress list
+  //
   list: function() {
     console.log('  Applications: ');
     var i;
@@ -82,6 +84,8 @@ var commands = {
     doExit();
   },
 
+  // impress add [path]
+  //
   add: function() {
 
     function doInput() {
@@ -111,45 +115,61 @@ var commands = {
 
   },
 
+  // impress remove [name]
+  //
   remove: function() {
     console.log('Not implemented');
     doExit();
   },
 
+  // impress new [name]
+  //
   new: function() {
     console.log('Not implemented');
     doExit();
   },
 
+  // impress start
+  //
   start: function() {
     if (isWin) execute('start cmd /K "cd /d ' + impressPath.replace(/\//g, '\\') + ' & node server.js"' );
     else execute('/impress/node_modules/impress/bin/impress start');
     doExit();
   },
         
+  // impress stop
+  //
   stop: function() {
     if (isWin) console.log('Not implemented');
     else execute('/impress/node_modules/impress/bin/impress stop');
     doExit();
   },
 
+  // impress restart
+  //
   restart: function() {
     if (isWin) console.log('Not implemented');
     else execute('/impress/node_modules/impress/bin/impress restart');
     doExit();
   },
 
+  // impress status
+  //
   status: function() {
     if (isWin) console.log('Not implemented');
     else execute('/impress/node_modules/impress/bin/impress status');
     doExit();
   },
 
+  // impress update
+  //
   update: function() {
     execute('npm update');
     doExit();
   },
 
+  // impress autostart
+  //
   autostart: function() {
     if (parameters[1] === 'on') execute('/impress/node_modules/impress/bin/uninstall.sh');
     else if (parameters[1] === 'off') execute('/impress/node_modules/impress/bin/install.sh');
