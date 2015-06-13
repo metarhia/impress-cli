@@ -137,7 +137,7 @@ var commands = {
   //
   start: function() {
     if (isWin) execute('start cmd /K "cd /d ' + impressPath.replace(/\//g, '\\') + ' & node server.js"' );
-    else execute(impressPath + '/node_modules/impress/bin/impress start');
+    else execute('nohup node --stack-trace-limit=1000 --allow-natives-syntax --max_old_space_size=2048 server.js > /dev/null 2>&1 &');
     doExit();
   },
         
@@ -145,7 +145,7 @@ var commands = {
   //
   stop: function() {
     if (isWin) console.log('Not implemented');
-    else execute(impressPath + '/node_modules/impress/bin/impress stop');
+    else execute('killall "impress srv"');
     doExit();
   },
 
