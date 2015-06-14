@@ -11,7 +11,7 @@
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Impress Application Server
-# Description:       Impress Application Server provudes platform for Node.js applications
+# Description:       Impress Application Server provides universal platform for Node.js applications
 ### END INIT INFO
 
 case $1 in
