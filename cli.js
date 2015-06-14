@@ -45,6 +45,7 @@ function execute(cmd, callback) {
 //
 function doExit() {
   rl.close();
+  process.chdir(curDir);
   process.exit(0);
 }
 
@@ -183,8 +184,8 @@ var commands = {
       console.log('Not implemented');
       doExit();
     } else {
-      if (parameters[1] === 'on') execute(__dirname + '/bin/install.sh', doExit);
-      else if (parameters[1] === 'off') execute(__dirname + '/bin/uninstall.sh', doExit);
+      if (parameters[1] === 'on') execute('./bin/install.sh', doExit);
+      else if (parameters[1] === 'off') execute('./bin/uninstall.sh', doExit);
       else showHelp();
     }
   },
@@ -194,7 +195,7 @@ var commands = {
   path: function() {
     if (parameters[1]) {
       impressPath = parameters[1]
-      fs.writeFileSync(__dirname + '/impress.link', impressPath);
+      fs.writeFileSync('./impress.link', impressPath);
     }
     console.log('  Path: ' + impressPath.green.bold);
     doExit();
@@ -207,6 +208,8 @@ console.dir({
   dirname: __dirname,
   cwd: process.cwd()
 });
+
+process.chdir(__dirname);
 
 // Parse command line
 //
