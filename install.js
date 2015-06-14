@@ -11,7 +11,7 @@ function execute(cmd, callback) {
   exec(cmd, function(error, stdout, stderr) {
     console.log('stdout:' + stdout);
     if (error) console.log('error:' + error);
-    if (stderr) console.log('stderr:' + );
+    if (stderr) console.log('stderr:' + stderr);
     if (callback) callback();
   });
 }

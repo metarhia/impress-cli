@@ -50,6 +50,7 @@ function execute(cmd, callback) {
 //
 function doExit() {
   rl.close();
+  process.exit(0);
 }
 
 // Command line commands list
@@ -212,7 +213,8 @@ console.log('Impress Application Server CLI'.green.bold);
 //
 if (parameters.length < 3) showHelp();
 else {
-  if (fs.existsSync(impressPath)) applications = fs.readdirSync(applicationsDir);
+  console.log('READ: '+applicationsDir);
+  if (fs.existsSync(applicationsDir)) applications = fs.readdirSync(applicationsDir);
   parameters.shift();
   parameters.shift();
   commandName = parameters[0];
