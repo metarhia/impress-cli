@@ -9,8 +9,6 @@ var fs = require('fs'),
     ncp = require('ncp').ncp,
     readline = require('readline'),
     exec = require('child_process').exec;
-    //spawn = require('child_process').spawn,
-    //async = require('async');
 
 var isWin = !!process.platform.match(/^win/);
 
@@ -30,8 +28,6 @@ var nodePar = '--stack-trace-limit=1000 --allow-natives-syntax --max_old_space_s
     commandName, command,
     parameters = process.argv,
     current = path.dirname(__filename.replace(/\\/g, '/'));
-    //parent = path.basename(path.dirname(current));
-
 
 global.applications = [];
 
