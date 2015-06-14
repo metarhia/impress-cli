@@ -6,11 +6,13 @@ var isWin = !!process.platform.match(/^win/);
 
 // Execute shell command displaying output and possible errors
 //
-function execute(cmd) {
+function execute(cmd, callback) {
+  console.log('exec(' + cmd + ')');
   exec(cmd, function(error, stdout, stderr) {
-    console.log(stdout);
-    if (error) console.log(error);
-    if (stderr) console.log(stderr);
+    console.log('stdout:' + stdout);
+    if (error) console.log('error:' + error);
+    if (stderr) console.log('stderr:' + );
+    if (callback) callback();
   });
 }
 
