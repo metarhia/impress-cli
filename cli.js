@@ -39,9 +39,8 @@ global.applications = [];
 //
 function execute(cmd, callback) {
   exec(cmd, function(error, stdout, stderr) {
-    console.log(stdout);
-    if (error) console.log(error);
-    if (stderr) console.log(stderr);
+    if (error) console.log(error.toString());
+    else console.log(stdout);
     if (callback) callback();
   });
 }
@@ -213,7 +212,6 @@ console.log('Impress Application Server CLI'.green.bold);
 //
 if (parameters.length < 3) showHelp();
 else {
-  console.log('READ: '+applicationsDir);
   if (fs.existsSync(applicationsDir)) applications = fs.readdirSync(applicationsDir);
   parameters.shift();
   parameters.shift();

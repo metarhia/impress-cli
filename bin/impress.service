@@ -2,9 +2,9 @@
 Description=Impress Application Server
 After=network.target
 [Service]
-ExecStart=impress start
-ExecStop=impress stop
-ExecReload=impress restart
+ExecStart=/bin/sh -c 'impress start'
+ExecStop=/bin/sh -c 'impress stop'
+ExecReload=/bin/sh -c 'impress restart'
 Type=forking
 [Install]
 WantedBy=multi-user.target
