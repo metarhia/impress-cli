@@ -203,6 +203,10 @@ var commands = {
 };
 
 console.log('Impress Application Server CLI'.green.bold);
+console.dir({
+  dirname: __dirname,
+  cwd: process.cwd()
+});
 
 // Parse command line
 //
