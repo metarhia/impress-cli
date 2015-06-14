@@ -21,7 +21,8 @@ var rl = readline.createInterface({
   output: process.stdout
 });
 
-var linkFileName = __dirname + '/impress.link',
+var nodePar = '--stack-trace-limit=1000 --allow-natives-syntax --max_old_space_size=2048',
+    linkFileName = __dirname + '/impress.link',
     existsLink = fs.existsSync(linkFileName),
     impressPath = existsLink ? fs.readFileSync(linkFileName, 'utf8') : '/impress',
     applicationsDir = impressPath + '/applications',
@@ -36,11 +37,12 @@ global.applications = [];
 
 // Execute shell command displaying output and possible errors
 //
-function execute(cmd) {
+function execute(cmd, callback) {
   exec(cmd, function(error, stdout, stderr) {
     console.log(stdout);
     if (error) console.log(error);
     if (stderr) console.log(stderr);
+    if (callback) callback();
   });
 }
 
@@ -84,7 +86,9 @@ var commands = {
   list: function() {
     console.log('  Applications: ');
     var i;
-    for (i = 0; i < applications.length; i++) console.log('    ' + applications[i].green.bold);
+    for (i = 0; i < applications.length; i++) {
+      console.log('    ' + applications[i].green.bold);
+    }
     doExit();
   },
 
@@ -136,49 +140,57 @@ var commands = {
   // impress start
   //
   start: function() {
-    if (isWin) execute('start cmd /K "cd /d ' + impressPath.replace(/\//g, '\\') + ' & node server.js"' );
-    else execute('nohup node --stack-trace-limit=1000 --allow-natives-syntax --max_old_space_size=2048 server.js > /dev/null 2>&1 &');
-    doExit();
+    if (isWin) execute('start cmd /K "cd /d ' + impressPath.replace(/\//g, '\\') + ' & node ' + nodePar + ' server.js"', doExit);
+    else execute('nohup node ' + nodePar + ' server.js > /dev/null 2>&1 &', doExit);
   },
         
   // impress stop
   //
   stop: function() {
-    if (isWin) console.log('Not implemented');
-    else execute('killall "impress srv"');
-    doExit();
+    if (isWin) {
+      console.log('Not implemented');
+      doExit();
+    } else execute('killall "impress srv"', commands.start);
   },
 
   // impress restart
   //
   restart: function() {
-    if (isWin) console.log('Not implemented');
-    else execute(impressPath + '/node_modules/impress/bin/impress restart');
-    doExit();
+    if (isWin) {
+      console.log('Not implemented');
+      doExit();
+    } else execute('killall "impress srv"', doExit);
   },
 
   // impress status
   //
   status: function() {
-    if (isWin) console.log('Not implemented');
-    else execute(impressPath + '/node_modules/impress/bin/impress status');
-    doExit();
+    if (isWin) {
+      console.log('Not implemented');
+      doExit();
+    } else execute('ps aux | grep "impress\|%CPU" | grep -v grep | grep -v sh', doExit);
   },
 
   // impress update
   //
   update: function() {
-    execute('npm update');
-    doExit();
+    if (isWin) {
+      console.log('Not implemented');
+      doExit();
+    } else execute('npm update -g impress-cli; cd ' + impressPath +'; npm update', doExit);
   },
 
   // impress autostart
   //
   autostart: function() {
-    if (parameters[1] === 'on') execute(impressPath + '/node_modules/impress/bin/uninstall.sh');
-    else if (parameters[1] === 'off') execute(impressPath + '/node_modules/impress/bin/install.sh');
-    else showHelp();
-    doExit();
+    if (isWin) {
+      console.log('Not implemented');
+      doExit();
+    } else {
+      if (parameters[1] === 'on') execute(impressPath + '/node_modules/impress/bin/uninstall.sh', doExit);
+      else if (parameters[1] === 'off') execute(impressPath + '/node_modules/impress/bin/install.sh', doExit);
+      else showHelp();
+    }
   },
 
   // impress autostart
@@ -201,8 +213,6 @@ console.log('Impress Application Server CLI'.bold);
 if (parameters.length < 3) showHelp();
 else {
   if (fs.existsSync(impressPath)) applications = fs.readdirSync(applicationsDir);
-  // notInstalled();
-
   parameters.shift();
   parameters.shift();
   commandName = parameters[0];

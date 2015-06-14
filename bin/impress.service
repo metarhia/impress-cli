@@ -1,0 +1,10 @@
+[Unit]
+Description=Impress Application Server
+After=network.target
+[Service]
+ExecStart=impress start
+ExecStop=impress stop
+ExecReload=impress restart
+Type=forking
+[Install]
+WantedBy=multi-user.target
