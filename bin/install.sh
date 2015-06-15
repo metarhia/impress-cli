@@ -1,8 +1,9 @@
 #!/bin/sh
 chmod +x $(pwd)/bin/uninstall.sh
 chmod +x $(pwd)/bin/impress
+ln -s -f $(pwd)/cli.js /bin/impress
 rm -f /etc/init.d/impress
-ln -s -f $(pwd)/bin/impress /etc/init.d/impress
+ln -f $(pwd)/bin/impress /etc/init.d/impress
 if [ -f /etc/debian_version ]; then
   sudo update-rc.d impress defaults
 elif [ $(pidof systemd) -eq 1 ]; then

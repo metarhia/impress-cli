@@ -54,17 +54,17 @@ function doExit() {
 function showHelp() {
   console.log(
     'Syntax:\n'+
-    '  impress list\n'+
-    '  impress add [path]\n'+
-    '  impress remove [name]\n'+
-    '  impress new [name]\n'+
-    '  impress start\n'+
-    '  impress stop\n'+
-    '  impress restart\n'+
-    '  impress status\n'+
-    '  impress update\n'+
-    '  impress autostart [on|off]\n'+
-    '  impress path <path>'
+    '  impress path <path>\n' +
+    '  impress start\n' +
+    '  impress stop\n' +
+    '  impress restart\n' +
+    '  impress status\n' +
+    '  impress update\n' +
+    '  impress autostart [on|off]\n' +
+    '  impress list\n' +
+    '  impress add [path]\n' +
+    '  impress remove [name]\n' +
+    '  impress new [name]'
   );
   doExit();
 }
@@ -204,11 +204,6 @@ var commands = {
 };
 
 console.log('Impress Application Server CLI'.green.bold);
-console.dir({
-  dirname: __dirname,
-  cwd: process.cwd()
-});
-
 process.chdir(__dirname);
 
 // Parse command line
