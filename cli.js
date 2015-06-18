@@ -34,7 +34,7 @@ global.applications = [];
 // Execute shell command displaying output and possible errors
 //
 function execute(cmd, callback) {
-  exec(cmd, function(error, stdout, stderr) {
+  exec(cmd, { cwd: __dirname }, function(error, stdout, stderr) {
     if (error) console.log(error.toString());
     else console.log(stdout);
     if (callback) callback();

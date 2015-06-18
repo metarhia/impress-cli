@@ -6,5 +6,6 @@ ExecStart=/bin/sh -c 'impress start'
 ExecStop=/bin/sh -c 'impress stop'
 ExecReload=/bin/sh -c 'impress restart'
 Type=forking
+OOMScoreAdjust=-1000
 [Install]
 WantedBy=multi-user.target
