@@ -6,7 +6,7 @@ rm -f /etc/init.d/impress
 ln -f $(pwd)/bin/impress /etc/init.d/impress
 if [ -n "command -v systemctl" ]; then
   rm -f /etc/systemd/system/impress.service
-  ln -s -f $(pwd)/bin/impress.service /etc/systemd/system/impress.service
+  ln -f $(pwd)/bin/impress.service /etc/systemd/system/impress.service
   systemctl daemon-reload
   systemctl enable impress
   systemctl -l status impress
