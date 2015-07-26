@@ -15,4 +15,7 @@ elif [ -f /etc/debian_version ]; then
 elif [ -f /etc/redhat-release ]; then
   chkconfig --add impress
   chkconfig impress on
+  if [ ! -f /usr/bin/killall ]; then
+    yum -y install psmisc
+  fi
 fi
