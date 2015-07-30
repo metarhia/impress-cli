@@ -1,6 +1,6 @@
 {
   "name": "impress-cli",
-  "version": "0.1.319",
+  "version": "0.1.322",
   "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
   "description": "Impress Application Server Command line interface",
   "license": "(MIT OR RUMI)",
@@ -21,7 +21,7 @@
   "main": "./cli.js",
   "bin": { "impress": "./cli.js" },
   "dependencies": {
-    "async": "1.2.x",
+    "async": "1.4.x",
     "colors": "1.1.x",
     "mkdirp": "0.5.x",
     "ncp": "2.0.x"

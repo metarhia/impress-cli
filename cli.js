@@ -26,15 +26,15 @@ var nodePar = '--stack-trace-limit=1000 --allow-natives-syntax --max_old_space_s
     applicationsDir = impressPath + '/applications',
     curDir = process.cwd(),
     commandName, command,
-    parameters = process.argv,
-    current = path.dirname(__filename.replace(/\\/g, '/'));
+    parameters = process.argv;
+    //current = path.dirname(__filename.replace(/\\/g, '/'));
 
 global.applications = [];
 
 // Execute shell command displaying output and possible errors
 //
 function execute(cmd, callback) {
-  exec(cmd, { cwd: __dirname }, function(error, stdout, stderr) {
+  exec(cmd, { cwd: __dirname }, function(error, stdout /* stderr */) {
     if (error) console.log(error.toString());
     else console.log(stdout);
     if (callback) callback();
@@ -67,11 +67,6 @@ function showHelp() {
     '  impress new [name]'
   );
   doExit();
-}
-
-function notInstalled() {
-  console.log('  Error: not installed as a service (globally)'.red.bold);
-  process.exit(0);
 }
 
 // Command line commands
@@ -194,7 +189,7 @@ var commands = {
   //
   path: function() {
     if (parameters[1]) {
-      impressPath = parameters[1]
+      impressPath = parameters[1];
       fs.writeFileSync('./impress.link', impressPath);
     }
     console.log('  Path: ' + impressPath.green.bold);
