@@ -4,7 +4,8 @@
 
 require('colors');
 
-var fs = require('fs'),
+var os = require('os'),
+    fs = require('fs'),
     path = require('path'),
     ncp = require('ncp').ncp,
     readline = require('readline'),
@@ -28,6 +29,19 @@ var nodePar = '--stack-trace-limit=1000 --allow-natives-syntax --max_old_space_s
     commandName, command,
     parameters = process.argv;
     //current = path.dirname(__filename.replace(/\\/g, '/'));
+
+var pkgPlace = impressPath + 'node_modules/impress/package.json',
+    pkgExists = fs.existsSync(pkgPlace),
+    pkgData;
+if (!pkgExists) {
+  pkgPlace = impressPath + 'package.json';
+  pkgExists = fs.existsSync(pkgPlace);
+}
+if (pkgExists) {
+  try {
+    pkgData = require(pkgPlace);
+  } catch(err) {}
+}
 
 global.applications = [];
 
@@ -59,6 +73,7 @@ function showHelp() {
     '  impress stop\n' +
     '  impress restart\n' +
     '  impress status\n' +
+    '  impress version\n' +
     '  impress update\n' +
     '  impress autostart [on|off]\n' +
     '  impress list\n' +
@@ -142,7 +157,10 @@ var commands = {
     if (isWin) {
       console.log('Not implemented');
       doExit();
-    } else execute('killall "impress srv"', doExit);
+    } else execute('killall "impress srv"', function() {
+      console.log('Stopped');
+      doExit();
+    });
   },
 
   // impress restart
@@ -160,7 +178,26 @@ var commands = {
     if (isWin) {
       console.log('Not implemented');
       doExit();
-    } else execute('ps aux | grep "impress\\|%CPU" | grep -v "grep\\|status"', doExit);
+    } else execute('ps aux | grep "impress\\|%CPU" | grep -v "grep\\|status"', function() {
+      console.log('Stopped');
+      doExit();
+    });
+  },
+
+  // impress version
+  //
+  version: function() {
+    console.log(
+      ' Impress AS: ' + pkgData.version + '\n' +
+      '    Node.js: ' + process.versions['node'] + '\n' +
+      '         v8: ' + process.versions['v8'] + '\n' +
+      '      libuv: ' + process.versions['uv'] + '\n' +
+      '       zlib: ' + process.versions['zlib'] + '\n' +
+      '   Open SSL: ' + process.versions['openssl'] + '\n' +
+      'HTTP parser: ' + process.versions['http_parser'] + '\n' +
+      '         OS: ' + os.type() + ' ' + os.release() + ' ' + os.arch()
+    );
+    doExit();
   },
 
   // impress update
@@ -179,9 +216,17 @@ var commands = {
       console.log('Not implemented');
       doExit();
     } else {
-      if (parameters[1] === 'on') execute('./bin/install.sh', doExit);
-      else if (parameters[1] === 'off') execute('./bin/uninstall.sh', doExit);
-      else showHelp();
+      if (parameters[1] === 'on') {
+        execute('./bin/install.sh', function() {
+          console.log('Installed to autostart on system boot');
+          doExit();
+        });
+      } else if (parameters[1] === 'off') {
+        execute('./bin/uninstall.sh', function() {
+          console.log('Uninstalled from autostart on system boot');
+          doExit();
+        });
+      } else showHelp();
     }
   },
 
@@ -198,7 +243,7 @@ var commands = {
 
 };
 
-console.log('Impress Application Server CLI'.green.bold);
+console.log(('Impress Application Server ' + pkgData.version).green.bold);
 process.chdir(__dirname);
 
 // Parse command line
