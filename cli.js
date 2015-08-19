@@ -41,7 +41,7 @@ if (pkgExists) {
   try {
     pkgData = require(pkgPlace);
   } catch(err) {}
-}
+} else pkgData = { version: '' };
 
 global.applications = [];
 
