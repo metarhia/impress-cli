@@ -4,7 +4,12 @@ chmod +x $(pwd)/bin/impress
 ln -s -f $(pwd)/cli.js /bin/impress
 rm -f /etc/init.d/impress
 ln -f $(pwd)/bin/impress /etc/init.d/impress
-if [ -n "$(command -v systemctl)" ]; then
+if [ "$(uname -s)" = 'FreeBSD' ]; then
+  ln -f $(pwd)/bin/impress-freebsd.sh /etc/rc.d/impress
+  chmod +x /etc/rc.d/impress
+  ln -s /usr/local/bin/node /bin/node
+  printf '#enable impress\nimpress_enable="YES"\n' >>  /etc/rc.conf
+elif [ -n "$(command -v systemctl)" ]; then
   rm -f /etc/systemd/system/impress.service
   ln -f $(pwd)/bin/impress.service /etc/systemd/system/impress.service
   systemctl daemon-reload
