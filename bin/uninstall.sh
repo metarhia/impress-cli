@@ -9,4 +9,7 @@ elif [ -f /etc/redhat-release ]; then
   chkconfig impress off
   chkconfig --del impress
   rm -f /etc/init.d/impress
+elif [ "$(uname -s)" = 'FreeBSD' ]; then
+  rm -f /etc/rc.d/impress
+  sed -iE '/#enable impress/ { N; d; }' /etc/rc.conf
 fi

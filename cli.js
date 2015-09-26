@@ -157,7 +157,13 @@ var commands = {
     if (isWin) {
       console.log('Not implemented');
       doExit();
-    } else execute('killall "impress srv"', function() {
+    } else if (process.platform == 'freebsd') {
+      execute('ps -Af | grep impress | awk \'{print $1}\' | xargs kill -9', function () {
+        console.log('Stopped');
+        doExit();
+      });
+    }
+    else execute('killall "impress srv"', function() {
       console.log('Stopped');
       doExit();
     });
