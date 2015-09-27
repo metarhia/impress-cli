@@ -6,7 +6,6 @@ require('colors');
 
 var os = require('os'),
     fs = require('fs'),
-    path = require('path'),
     ncp = require('ncp').ncp,
     readline = require('readline'),
     exec = require('child_process').exec;
@@ -28,7 +27,6 @@ var nodePar = '--stack-trace-limit=1000 --allow-natives-syntax --max_old_space_s
     curDir = process.cwd(),
     commandName, command,
     parameters = process.argv;
-    //current = path.dirname(__filename.replace(/\\/g, '/'));
 
 var pkgPlace = impressPath + 'node_modules/impress/package.json',
     pkgExists = fs.existsSync(pkgPlace),
@@ -67,7 +65,7 @@ function doExit() {
 //
 function showHelp() {
   console.log(
-    'Syntax:\n'+
+    'Syntax:\n' +
     '  impress path <path>\n' +
     '  impress start\n' +
     '  impress stop\n' +
@@ -110,7 +108,7 @@ var commands = {
           doAdd();
           doExit();
         } else {
-          console.log('Application "' +answer+ '" already exists');
+          console.log('Application "' + answer + '" already exists');
           doInput();
         }
       });
@@ -157,7 +155,7 @@ var commands = {
     if (isWin) {
       console.log('Not implemented');
       doExit();
-    } else if (process.platform == 'freebsd') {
+    } else if (process.platform === 'freebsd') {
       execute('ps -Af | grep impress | awk \'{print $1}\' | xargs kill -9', function () {
         console.log('Stopped');
         doExit();
@@ -212,7 +210,7 @@ var commands = {
     if (isWin) {
       console.log('Not implemented');
       doExit();
-    } else execute('npm update -g impress-cli; cd ' + impressPath +'; npm update', doExit);
+    } else execute('npm update -g impress-cli; cd ' + impressPath + '; npm update', doExit);
   },
 
   // impress autostart

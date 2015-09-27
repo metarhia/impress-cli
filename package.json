@@ -1,6 +1,6 @@
 {
   "name": "impress-cli",
-  "version": "0.1.341",
+  "version": "0.1.369",
   "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
   "description": "Impress Application Server Command line interface",
   "license": "(MIT OR RUMI)",
