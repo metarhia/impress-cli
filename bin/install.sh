@@ -5,7 +5,7 @@ ln -s -f $(pwd)/cli.js /bin/impress
 rm -f /etc/init.d/impress
 ln -f $(pwd)/bin/impress /etc/init.d/impress
 if [ "$(uname -s)" = 'FreeBSD' ]; then
-  ln -f $(pwd)/bin/impress-freebsd.sh /etc/rc.d/impress
+  ln -f $(pwd)/impress-freebsd.sh /etc/rc.d/impress
   chmod +x /etc/rc.d/impress
   ln -s /usr/local/bin/node /bin/node
   printf '#enable impress\nimpress_enable="YES"\n' >>  /etc/rc.conf
