@@ -28,13 +28,17 @@ var nodePar = '--stack-trace-limit=1000 --allow-natives-syntax --max_old_space_s
     commandName, command,
     parameters = process.argv;
 
-var pkgPlace = impressPath + 'node_modules/impress/package.json',
+var pkgPlace = impressPath + '/node_modules/impress/package.json',
     pkgExists = fs.existsSync(pkgPlace),
     pkgData;
+
+console.log(pkgPlace + '  :  ' + impressPath + '  :  ' + pkgExists);
+
 if (!pkgExists) {
   pkgPlace = impressPath + 'package.json';
   pkgExists = fs.existsSync(pkgPlace);
 }
+
 if (pkgExists) {
   try {
     pkgData = require(pkgPlace);
