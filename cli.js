@@ -32,8 +32,6 @@ var pkgPlace = impressPath + '/node_modules/impress/package.json',
     pkgExists = fs.existsSync(pkgPlace),
     pkgData;
 
-console.log(pkgPlace + '  :  ' + impressPath + '  :  ' + pkgExists);
-
 if (!pkgExists) {
   pkgPlace = impressPath + 'package.json';
   pkgExists = fs.existsSync(pkgPlace);
