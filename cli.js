@@ -148,7 +148,42 @@ var commands = {
   //
   start: function() {
     if (isWin) execute('start cmd /K "cd /d ' + impressPath.replace(/\//g, '\\') + ' & node ' + nodePar + ' server.js"', doExit);
-    else execute('cd ' + impressPath + '; nohup node ' + nodePar + ' server.js > /dev/null 2>&1 &', doExit);
+    else {
+      var command = 'cd ' + impressPath + '; nohup node ' + nodePar +
+                    ' server.js > /dev/null 2>&1 & echo $! > ' + __dirname + '/run.pid';
+      execute(command, function() {
+        setTimeout(function() {
+          checkStarted(finalize);
+        }, 2000);
+      });
+
+      function checkStarted(callback) {
+        fs.readFile('./run.pid', function(err, pid) {
+          if (err) {
+            startFailed();
+            return callback();
+          }
+
+          exec('kill -0 ' + pid, function(err) {
+            if (err) {
+              startFailed();
+            }
+
+            callback();
+          });
+        });
+      }
+
+      function startFailed() {
+        console.log('Failed to start Impress Application Server'.bold.red);
+        console.log(('See logs in ' + impressPath + '/log/ for details').bold.red);
+      }
+
+      function finalize() {
+        fs.unlink('./run.pid');
+        doExit();
+      }
+    }
   },
         
   // impress stop
