@@ -2,3 +2,5 @@ node_modules
 npm-debug.log
 crlf.js
 .DS_Store
+.vagrant/
+Vagrantfile
