@@ -72,7 +72,7 @@ function showHelp() {
     '  impress path <path>\n' +
     '  impress start\n' +
     '  impress stop [-f|--force]\n' +
-    '  impress restart\n' +
+    '  impress restart [-f|--force]\n' +
     '  impress status\n' +
     '  impress version\n' +
     '  impress update\n' +
@@ -189,7 +189,9 @@ var commands = {
         
   // impress stop
   //
-  stop: function() {
+  stop: function(callback) {
+    callback = callback || doExit;
+
     var force = false;
     if (['-f', '--force'].indexOf(parameters[1]) !== -1) {
       force = true;
@@ -197,14 +199,14 @@ var commands = {
 
     if (isWin) {
       console.log('Not implemented');
-      doExit();
+      callback();
     } else {
       exec('ps -A | awk \'{if ($4 == "impress") print $1, $5}\'',
         function(err, stdout, stderr) {
           var error = err || stderr;
           if (error) {
             console.log(error.toString().red.bold);
-            doExit();
+            callback();
           }
 
           var processes = stdout.toString().split('\n').filter(function(line) {
@@ -218,14 +220,14 @@ var commands = {
             return 0;
           });
 
-          async.eachSeries(processes, function(worker, callback) {
+          async.eachSeries(processes, function(worker, cb) {
             var command = 'kill ';
             if (force) command += '-9 ';
-            execute(command + worker.pid, callback);
+            execute(command + worker.pid, cb);
           }, function(err) {
             if (err) console.log(err.toString().red.bold);
             else console.log('Stopped');
-            doExit();
+            callback();
           });
         });
     }
@@ -237,7 +239,9 @@ var commands = {
     if (isWin) {
       console.log('Not implemented');
       doExit();
-    } else execute('killall "impress srv"', commands.start);
+    } else {
+      commands.stop(commands.start);
+    }
   },
 
   // impress status
