@@ -8,7 +8,8 @@ var os = require('os'),
     fs = require('fs'),
     ncp = require('ncp').ncp,
     readline = require('readline'),
-    exec = require('child_process').exec;
+    exec = require('child_process').exec,
+    async = require('async');
 
 var isWin = !!process.platform.match(/^win/);
 
@@ -70,7 +71,7 @@ function showHelp() {
     'Syntax:\n' +
     '  impress path <path>\n' +
     '  impress start\n' +
-    '  impress stop\n' +
+    '  impress stop [-f|--force]\n' +
     '  impress restart\n' +
     '  impress status\n' +
     '  impress version\n' +
@@ -189,19 +190,45 @@ var commands = {
   // impress stop
   //
   stop: function() {
+    var force = false;
+    if (['-f', '--force'].indexOf(parameters[1]) !== -1) {
+      force = true;
+    }
+
     if (isWin) {
       console.log('Not implemented');
       doExit();
-    } else if (process.platform === 'freebsd') {
-      execute('ps -Af | grep impress | awk \'{print $1}\' | xargs kill -9', function () {
-        console.log('Stopped');
-        doExit();
-      });
+    } else {
+      exec('ps -A | awk \'{if ($4 == "impress") print $1, $5}\'',
+        function(err, stdout, stderr) {
+          var error = err || stderr;
+          if (error) {
+            console.log(error.toString().red.bold);
+            doExit();
+          }
+
+          var processes = stdout.toString().split('\n').filter(function(line) {
+            return line !== '';
+          }).map(function(line) {
+            var parsedLine = line.split(' ');
+            return { pid: parsedLine[0], workerId: parsedLine[1] };
+          }).sort(function(first, second) {
+            if (first.workerId  === 'srv') return -1;
+            if (second.workerId === 'srv') return 1;
+            return 0;
+          });
+
+          async.eachSeries(processes, function(worker, callback) {
+            var command = 'kill ';
+            if (force) command += '-9 ';
+            execute(command + worker.pid, callback);
+          }, function(err) {
+            if (err) console.log(err.toString().red.bold);
+            else console.log('Stopped');
+            doExit();
+          });
+        });
     }
-    else execute('killall "impress srv"', function() {
-      console.log('Stopped');
-      doExit();
-    });
   },
 
   // impress restart
