@@ -8,7 +8,8 @@ var os = require('os'),
     fs = require('fs'),
     ncp = require('ncp').ncp,
     readline = require('readline'),
-    exec = require('child_process').exec;
+    exec = require('child_process').exec,
+    async = require('async');
 
 var isWin = !!process.platform.match(/^win/);
 
@@ -70,8 +71,8 @@ function showHelp() {
     'Syntax:\n' +
     '  impress path <path>\n' +
     '  impress start\n' +
-    '  impress stop\n' +
-    '  impress restart\n' +
+    '  impress stop [-f|--force]\n' +
+    '  impress restart [-f|--force]\n' +
     '  impress status\n' +
     '  impress version\n' +
     '  impress update\n' +
@@ -148,25 +149,88 @@ var commands = {
   //
   start: function() {
     if (isWin) execute('start cmd /K "cd /d ' + impressPath.replace(/\//g, '\\') + ' & node ' + nodePar + ' server.js"', doExit);
-    else execute('cd ' + impressPath + '; nohup node ' + nodePar + ' server.js > /dev/null 2>&1 &', doExit);
+    else {
+      var command = 'cd ' + impressPath + '; nohup node ' + nodePar +
+                    ' server.js > /dev/null 2>&1 & echo $! > ' + __dirname + '/run.pid';
+      execute(command, function() {
+        setTimeout(function() {
+          checkStarted(finalize);
+        }, 2000);
+      });
+
+      function checkStarted(callback) {
+        fs.readFile('./run.pid', function(err, pid) {
+          if (err) {
+            startFailed();
+            return callback();
+          }
+
+          exec('kill -0 ' + pid, function(err) {
+            if (err) {
+              startFailed();
+            }
+
+            callback();
+          });
+        });
+      }
+
+      function startFailed() {
+        console.log('Failed to start Impress Application Server'.bold.red);
+        console.log(('See logs in ' + impressPath + '/log/ for details').bold.red);
+      }
+
+      function finalize() {
+        fs.unlink('./run.pid');
+        doExit();
+      }
+    }
   },
         
   // impress stop
   //
-  stop: function() {
+  stop: function(callback) {
+    callback = callback || doExit;
+
+    var force = false;
+    if (['-f', '--force'].indexOf(parameters[1]) !== -1) {
+      force = true;
+    }
+
     if (isWin) {
       console.log('Not implemented');
-      doExit();
-    } else if (process.platform === 'freebsd') {
-      execute('ps -Af | grep impress | awk \'{print $1}\' | xargs kill -9', function () {
-        console.log('Stopped');
-        doExit();
-      });
+      callback();
+    } else {
+      exec('ps -A | awk \'{if ($4 == "impress") print $1, $5}\'',
+        function(err, stdout, stderr) {
+          var error = err || stderr;
+          if (error) {
+            console.log(error.toString().red.bold);
+            callback();
+          }
+
+          var processes = stdout.toString().split('\n').filter(function(line) {
+            return line !== '';
+          }).map(function(line) {
+            var parsedLine = line.split(' ');
+            return { pid: parsedLine[0], workerId: parsedLine[1] };
+          }).sort(function(first, second) {
+            if (first.workerId  === 'srv') return -1;
+            if (second.workerId === 'srv') return 1;
+            return 0;
+          });
+
+          async.eachSeries(processes, function(worker, cb) {
+            var command = 'kill ';
+            if (force) command += '-9 ';
+            execute(command + worker.pid, cb);
+          }, function(err) {
+            if (err) console.log(err.toString().red.bold);
+            else console.log('Stopped');
+            callback();
+          });
+        });
     }
-    else execute('killall "impress srv"', function() {
-      console.log('Stopped');
-      doExit();
-    });
   },
 
   // impress restart
@@ -175,7 +239,9 @@ var commands = {
     if (isWin) {
       console.log('Not implemented');
       doExit();
-    } else execute('killall "impress srv"', commands.start);
+    } else {
+      commands.stop(commands.start);
+    }
   },
 
   // impress status
