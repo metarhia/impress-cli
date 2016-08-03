@@ -7,9 +7,9 @@ require('colors');
 var os = require('os'),
     fs = require('fs'),
     ncp = require('ncp').ncp,
-    readline = require('readline'),
-    exec = require('child_process').exec,
-    async = require('async');
+    cp = require('child_process'),
+    metasync = require('metasync'),
+    readline = require('readline');
 
 var isWin = !!process.platform.match(/^win/);
 
@@ -49,7 +49,7 @@ global.applications = [];
 // Execute shell command displaying output and possible errors
 //
 function execute(cmd, callback) {
-  exec(cmd, { cwd: __dirname }, function(error, stdout /* stderr */) {
+  cp.exec(cmd, { cwd: __dirname }, function(error, stdout /* stderr */) {
     if (error) console.log(error.toString());
     else console.log(stdout);
     if (callback) callback();
@@ -165,7 +165,7 @@ var commands = {
             return callback();
           }
 
-          exec('kill -0 ' + pid, function(err) {
+          cp.exec('kill -0 ' + pid, function(err) {
             if (err) {
               startFailed();
             }
@@ -201,7 +201,7 @@ var commands = {
       console.log('Not implemented');
       callback();
     } else {
-      exec('ps -A | awk \'{if ($4 == "impress") print $1, $5}\'',
+      cp.exec('ps -A | awk \'{if ($4 == "impress") print $1, $5}\'',
         function(err, stdout, stderr) {
           var error = err || stderr;
           if (error) {
@@ -220,7 +220,7 @@ var commands = {
             return 0;
           });
 
-          async.eachSeries(processes, function(worker, cb) {
+          metasync.series(processes, function(worker, cb) {
             var command = 'kill ';
             if (force) command += '-9 ';
             execute(command + worker.pid, cb);
@@ -229,7 +229,8 @@ var commands = {
             else console.log('Stopped');
             callback();
           });
-        });
+        }
+      );
     }
   },
 
