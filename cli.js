@@ -4,40 +4,40 @@
 
 require('colors');
 
-var os = require('os'),
-    fs = require('fs'),
-    ncp = require('ncp').ncp,
-    cp = require('child_process'),
-    metasync = require('metasync'),
-    readline = require('readline');
+const os = require('os');
+const fs = require('fs');
+const ncp = require('ncp').ncp;
+const cp = require('child_process');
+const metasync = require('metasync');
+const readline = require('readline');
 
-var isWin = !!process.platform.match(/^win/);
+const isWin = !!process.platform.match(/^win/);
 
 ncp.limit = 16;
 
-var rl = readline.createInterface({
+const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
-var nodePar = (
+const nodePar = (
   '--stack-trace-limit=1000 --allow-natives-syntax --max_old_space_size=2048'
 );
 
-var linkFileName = __dirname + '/impress.link',
-    existsLink = fs.existsSync(linkFileName),
-    impressPath = '/impress';
+const linkFileName = __dirname + '/impress.link';
+const existsLink = fs.existsSync(linkFileName);
+let impressPath = '/impress';
 
 if (existsLink) {
   impressPath = fs.readFileSync(linkFileName, 'utf8');
 }
 
-var applicationsDir = impressPath + '/applications',
-    curDir = process.cwd(),
-    commandName, command,
-    parameters = process.argv;
+const applicationsDir = impressPath + '/applications';
+const curDir = process.cwd();
+let commandName, command;
+const parameters = process.argv;
 
-var pkgPlace = impressPath + '/node_modules/impress/package.json',
+let pkgPlace = impressPath + '/node_modules/impress/package.json',
     pkgExists = fs.existsSync(pkgPlace),
     pkgData;
 
@@ -59,7 +59,7 @@ global.applications = [];
 // Execute shell command displaying output and possible errors
 //
 function execute(cmd, callback) {
-  cp.exec(cmd, { cwd: __dirname }, function(error, stdout /* stderr */) {
+  cp.exec(cmd, { cwd: __dirname }, (error, stdout /* stderr */) => {
     if (error) console.log(error.toString());
     else console.log(stdout);
     if (callback) callback();
@@ -97,13 +97,13 @@ function showHelp() {
 
 // Command line commands
 //
-var commands = {
+const commands = {
 
   // impress list
   //
-  list: function() {
+  list() {
     console.log('  Applications: ');
-    var i;
+    let i;
     for (i = 0; i < applications.length; i++) {
       console.log('    ' + applications[i].green.bold);
     }
@@ -112,13 +112,13 @@ var commands = {
 
   // impress add [path]
   //
-  add: function() {
+  add() {
 
-    var applicationName = parameters[1];
+    let applicationName = parameters[1];
     if (applicationName) doAdd(); else doInput();
 
     function doInput() {
-      rl.question('Enter application name: ', function(answer) {
+      rl.question('Enter application name: ', (answer) => {
         if (applications.indexOf(answer) === -1) {
           applicationName = answer;
           doAdd();
@@ -131,8 +131,8 @@ var commands = {
     }
 
     function doAdd() {
-      var applicationPath = applicationsDir + '/' + applicationName,
-          applicationLink = applicationPath + '/application.link';
+      const applicationPath = applicationsDir + '/' + applicationName;
+      const applicationLink = applicationPath + '/application.link';
       fs.mkdirSync(applicationPath);
       fs.writeFileSync(applicationLink, curDir);
       console.log(
@@ -146,30 +146,30 @@ var commands = {
 
   // impress remove [name]
   //
-  remove: function() {
+  remove() {
     console.log('Not implemented');
     doExit();
   },
 
   // impress new [name]
   //
-  new: function() {
+  new() {
     console.log('Not implemented');
     doExit();
   },
 
   // impress start
   //
-  start: function() {
+  start() {
 
     function checkStarted(callback) {
-      fs.readFile('./run.pid', function(err, pid) {
+      fs.readFile('./run.pid', (err, pid) => {
         if (err) {
           startFailed();
           return callback();
         }
 
-        cp.exec('kill -0 ' + pid, function(err) {
+        cp.exec('kill -0 ' + pid, (err) => {
           if (err) {
             startFailed();
           }
@@ -197,12 +197,12 @@ var commands = {
         ' & node ' + nodePar + ' server.js"', doExit
       );
     } else {
-      var command = (
+      const command = (
         'cd ' + impressPath + '; nohup node ' + nodePar +
         ' server.js > /dev/null 2>&1 & echo $! > ' + __dirname + '/run.pid'
       );
-      execute(command, function() {
-        setTimeout(function() {
+      execute(command, () => {
+        setTimeout(() => {
           checkStarted(finalize);
         }, 2000);
       });
@@ -212,10 +212,10 @@ var commands = {
 
   // impress stop
   //
-  stop: function(callback) {
+  stop(callback) {
     callback = callback || doExit;
 
-    var force = false;
+    let force = false;
     if (['-f', '--force'].indexOf(parameters[1]) !== -1) {
       force = true;
     }
@@ -225,29 +225,29 @@ var commands = {
       callback();
     } else {
       cp.exec('ps -A | awk \'{if ($4 == "impress") print $1, $5}\'',
-        function(err, stdout, stderr) {
-          var error = err || stderr;
+        (err, stdout, stderr) => {
+          const error = err || stderr;
           if (error) {
             console.log(error.toString().red.bold);
             callback();
           }
 
-          var processes = stdout.toString().split('\n').filter(function(line) {
-            return line !== '';
-          }).map(function(line) {
-            var parsedLine = line.split(' ');
+          const processes = stdout.toString().split('\n').filter((line) =>
+             line !== ''
+          ).map((line) => {
+            const parsedLine = line.split(' ');
             return { pid: parsedLine[0], workerId: parsedLine[1] };
-          }).sort(function(first, second) {
+          }).sort((first, second) => {
             if (first.workerId  === 'srv') return -1;
             if (second.workerId === 'srv') return 1;
             return 0;
           });
 
-          metasync.series(processes, function(worker, cb) {
-            var command = 'kill ';
+          metasync.series(processes, (worker, cb) => {
+            let command = 'kill ';
             if (force) command += '-9 ';
             execute(command + worker.pid, cb);
-          }, function(err) {
+          }, (err) => {
             if (err) console.log(err.toString().red.bold);
             else console.log('Stopped');
             callback();
@@ -259,7 +259,7 @@ var commands = {
 
   // impress restart
   //
-  restart: function() {
+  restart() {
     if (isWin) {
       console.log('Not implemented');
       doExit();
@@ -270,14 +270,14 @@ var commands = {
 
   // impress status
   //
-  status: function() {
+  status() {
     if (isWin) {
       console.log('Not implemented');
       doExit();
     } else {
       execute(
         'ps aux | grep "impress\\|%CPU" | grep -v "grep\\|status"',
-        function() {
+        () => {
           console.log('Stopped');
           doExit();
         }
@@ -287,7 +287,7 @@ var commands = {
 
   // impress version
   //
-  version: function() {
+  version() {
     console.log(
       ' Impress AS: ' + pkgData.version + '\n' +
       '    Node.js: ' + process.versions['node'] + '\n' +
@@ -303,7 +303,7 @@ var commands = {
 
   // impress update
   //
-  update: function() {
+  update() {
     if (isWin) {
       console.log('Not implemented');
       doExit();
@@ -316,17 +316,17 @@ var commands = {
 
   // impress autostart
   //
-  autostart: function() {
+  autostart() {
     if (isWin) {
       console.log('Not implemented');
       doExit();
     } else if (parameters[1] === 'on') {
-      execute('./bin/install.sh', function() {
+      execute('./bin/install.sh', () => {
         console.log('Installed to autostart on system boot');
         doExit();
       });
     } else if (parameters[1] === 'off') {
-      execute('./bin/uninstall.sh', function() {
+      execute('./bin/uninstall.sh', () => {
         console.log('Uninstalled from autostart on system boot');
         doExit();
       });
@@ -335,7 +335,7 @@ var commands = {
 
   // impress autostart
   //
-  path: function() {
+  path() {
     if (parameters[1]) {
       impressPath = parameters[1];
       fs.writeFileSync('./impress.link', impressPath);
@@ -354,7 +354,7 @@ process.chdir(__dirname);
 if (parameters.length < 3) showHelp();
 else {
   if (fs.existsSync(applicationsDir)) {
-    applications = fs.readdirSync(applicationsDir);
+    global.applications = fs.readdirSync(applicationsDir);
   }
   parameters.shift();
   parameters.shift();
