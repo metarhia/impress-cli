@@ -29,7 +29,11 @@ const existsLink = fs.existsSync(linkFileName);
 let impressPath = '/impress';
 
 if (existsLink) {
-  impressPath = fs.readFileSync(linkFileName, 'utf8');
+  try {
+    impressPath = fs.readFileSync(linkFileName, 'utf8');
+  } catch (e) {
+    // just do not change impressPath
+  }
 }
 
 const applicationsDir = impressPath + '/applications';

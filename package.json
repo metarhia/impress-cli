@@ -1,6 +1,6 @@
 {
   "name": "impress-cli",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
   "description": "Impress Application Server Command line interface",
   "license": "MIT",
@@ -39,6 +39,6 @@
     "predef": ["application"],
     "node": true,
     "indent": 2,
-    "maxcomplexity": 16
+    "maxcomplexity": 5
   }
 }
