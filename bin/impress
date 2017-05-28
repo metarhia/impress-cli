@@ -14,12 +14,16 @@
 # Description:       Impress Application Server provides universal platform for Node.js applications
 ### END INIT INFO
 
+lockfile="/var/lock/subsys/impress"
+
 case $1 in
 
   start)
+    touch $lockfile
     impress start
     ;;
   stop)
+    rm -f $lockfile
     impress stop
     ;;
   restart|reload)
