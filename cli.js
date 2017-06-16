@@ -241,11 +241,7 @@ const commands = {
           ).map((line) => {
             const parsedLine = line.split(' ');
             return { pid: parsedLine[0], workerId: parsedLine[1] };
-          }).sort((first, second) => {
-            if (first.workerId  === 'srv') return -1;
-            if (second.workerId === 'srv') return 1;
-            return 0;
-          });
+          }).filter((parsedLine) => parsedLine.workerId === 'srv');
 
           metasync.series(processes, (worker, cb) => {
             let command = 'kill ';
