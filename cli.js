@@ -290,12 +290,12 @@ const commands = {
   version() {
     console.log(
       ' Impress AS: ' + pkgData.version + '\n' +
-      '    Node.js: ' + process.versions['node'] + '\n' +
-      '         v8: ' + process.versions['v8'] + '\n' +
-      '      libuv: ' + process.versions['uv'] + '\n' +
-      '       zlib: ' + process.versions['zlib'] + '\n' +
-      '   Open SSL: ' + process.versions['openssl'] + '\n' +
-      'HTTP parser: ' + process.versions['http_parser'] + '\n' +
+      '    Node.js: ' + process.versions.node + '\n' +
+      '         v8: ' + process.versions.v8 + '\n' +
+      '      libuv: ' + process.versions.uv + '\n' +
+      '       zlib: ' + process.versions.zlib + '\n' +
+      '   Open SSL: ' + process.versions.openssl + '\n' +
+      'HTTP parser: ' + process.versions.http_parser + '\n' +
       '         OS: ' + os.type() + ' ' + os.release() + ' ' + os.arch()
     );
     doExit();
