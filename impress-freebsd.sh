@@ -21,19 +21,19 @@ load_rc_config $name
 
 impress_start()
 {
-	/bin/sh -c 'impress start'
+  /bin/sh -c 'impress start'
 }
 impress_stop()
 {
-	/bin/sh -c 'impress stop'
+  /bin/sh -c 'impress stop'
 }
 impress_reload()
 {
-	/bin/sh -c 'impress restart'
+  /bin/sh -c 'impress restart'
 }
 impress_status()
 {
-	/bin/sh -c 'impress status'
+  /bin/sh -c 'impress status'
 }
 
 run_rc_command "$1"
