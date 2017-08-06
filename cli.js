@@ -40,9 +40,9 @@ const curDir = process.cwd();
 let commandName, command;
 const parameters = process.argv;
 
-let pkgPlace = impressPath + '/node_modules/impress/package.json',
-    pkgExists = fs.existsSync(pkgPlace),
-    pkgData;
+let pkgPlace = impressPath + '/node_modules/impress/package.json';
+let pkgExists = fs.existsSync(pkgPlace);
+let pkgData;
 
 if (!pkgExists) {
   pkgPlace = impressPath + 'package.json';
@@ -55,34 +55,41 @@ if (pkgExists) {
   } catch (err) {
     console.log(err.toString());
   }
-} else pkgData = { version: '' };
+} else {
+  pkgData = { version: '' };
+}
 
 global.applications = [];
 
-// Execute shell command displaying output and possible errors
-//
-function execute(cmd, callback) {
+function execute(
+  // Execute shell command displaying output and possible errors
+  cmd,
+  callback
+) {
   cp.exec(cmd, { cwd: __dirname }, (error, stdout /* stderr */) => {
-    if (error) console.log(error.toString());
-    else console.log(stdout);
+    if (error) {
+      console.log(concolor.error(error.toString()));
+    } else {
+      console.log(stdout);
+    }
     if (callback) callback();
   });
 }
 
-// Release readline on exit
-//
-function doExit() {
+function doExit(
+  // Release readline on exit
+) {
   rl.close();
   process.chdir(curDir);
   process.exit(0);
 }
 
-// Command line commands list
-//
-function showHelp() {
+function showHelp(
+  // Command line commands list
+) {
   console.log(
-    'Syntax:\n' +
-    '  impress path <path>\n' +
+    concolor.b('Syntax:\n') +
+    concolor.white('  impress path <path>\n' +
     '  impress start\n' +
     '  impress stop [-f|--force]\n' +
     '  impress restart [-f|--force]\n' +
@@ -93,30 +100,28 @@ function showHelp() {
     '  impress list\n' +
     '  impress add [path]\n' +
     '  impress remove [name]\n' +
-    '  impress new [name]'
+    '  impress new [name]')
   );
   doExit();
 }
 
-// Command line commands
+// Commands
 //
 const commands = {
 
-  // impress list
-  //
-  list() {
+  list(
+    // impress list
+  ) {
     console.log('  Applications: ');
-    let i;
-    for (i = 0; i < applications.length; i++) {
+    for (let i = 0; i < applications.length; i++) {
       console.log(concolor.info('    ' + applications[i]));
     }
     doExit();
   },
 
-  // impress add [path]
-  //
-  add() {
-
+  add(
+    // impress add [path]
+  ) {
     let applicationName = parameters[1];
     if (applicationName) doAdd(); else doInput();
 
@@ -147,23 +152,23 @@ const commands = {
 
   },
 
-  // impress remove [name]
-  //
-  remove() {
+  remove(
+    // impress remove [name]
+  ) {
     console.log('Not implemented');
     doExit();
   },
 
-  // impress new [name]
-  //
-  new() {
+  new(
+    // impress new [name]
+  ) {
     console.log('Not implemented');
     doExit();
   },
 
-  // impress start
-  //
-  start() {
+  start(
+    // impress start
+  ) {
 
     function checkStarted(callback) {
       fs.readFile('./run.pid', (err, pid) => {
@@ -213,9 +218,10 @@ const commands = {
 
   },
 
-  // impress stop
-  //
-  stop(callback) {
+  stop(
+    // impress stop
+    callback
+  ) {
     callback = callback || doExit;
 
     let force = false;
@@ -235,20 +241,25 @@ const commands = {
             callback();
           }
 
-          const processes = stdout.toString().split('\n').filter((line) =>
-             line !== ''
-          ).map((line) => {
-            const parsedLine = line.split(' ');
-            return { pid: parsedLine[0], workerId: parsedLine[1] };
-          }).filter((parsedLine) => parsedLine.workerId === 'srv');
+          const processes = stdout.toString()
+            .split('\n')
+            .filter((line) => line !== '')
+            .map((line) => {
+              const parsedLine = line.split(' ');
+              return { pid: parsedLine[0], workerId: parsedLine[1] };
+            })
+            .filter((parsedLine) => parsedLine.workerId === 'srv');
 
           metasync.series(processes, (worker, cb) => {
             let command = 'kill ';
             if (force) command += '-9 ';
             execute(command + worker.pid, cb);
           }, (err) => {
-            if (err) console.log(concolor.error(err.toString()));
-            else console.log('Stopped');
+            if (err) {
+              console.log(concolor.error(err.toString()));
+            } else {
+              console.log('Stopped');
+            }
             callback();
           });
         }
@@ -256,9 +267,9 @@ const commands = {
     }
   },
 
-  // impress restart
-  //
-  restart() {
+  restart(
+    // impress restart
+  ) {
     if (isWin) {
       console.log('Not implemented');
       doExit();
@@ -267,9 +278,9 @@ const commands = {
     }
   },
 
-  // impress status
-  //
-  status() {
+  status(
+    // impress status
+  ) {
     if (isWin) {
       console.log('Not implemented');
       doExit();
@@ -284,9 +295,9 @@ const commands = {
     }
   },
 
-  // impress version
-  //
-  version() {
+  version(
+    // impress version
+  ) {
     console.log(
       ' Impress AS: ' + pkgData.version + '\n' +
       '    Node.js: ' + process.versions.node + '\n' +
@@ -300,9 +311,9 @@ const commands = {
     doExit();
   },
 
-  // impress update
-  //
-  update() {
+  update(
+    // impress update
+  ) {
     if (isWin) {
       console.log('Not implemented');
       doExit();
@@ -313,9 +324,9 @@ const commands = {
     }
   },
 
-  // impress autostart
-  //
-  autostart() {
+  autostart(
+    // impress autostart
+  ) {
     if (isWin) {
       console.log('Not implemented');
       doExit();
@@ -329,12 +340,14 @@ const commands = {
         console.log('Uninstalled from autostart on system boot');
         doExit();
       });
-    } else showHelp();
+    } else {
+      showHelp();
+    }
   },
 
-  // impress autostart
-  //
-  path() {
+  path(
+    // impress autostart
+  ) {
     if (parameters[1]) {
       impressPath = parameters[1];
       fs.writeFileSync('./impress.link', impressPath);
@@ -350,8 +363,9 @@ process.chdir(__dirname);
 
 // Parse command line
 //
-if (parameters.length < 3) showHelp();
-else {
+if (parameters.length < 3) {
+  showHelp();
+} else {
   if (fs.existsSync(applicationsDir)) {
     global.applications = fs.readdirSync(applicationsDir);
   }
