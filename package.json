@@ -23,7 +23,7 @@
     "impress": "./cli.js"
   },
   "dependencies": {
-    "colors": "^1.1.2",
+    "concolor": "^0.1.4",
     "metasync": "^0.3.3",
     "mkdirp": "^0.5.1",
     "ncp": "^2.0.0"

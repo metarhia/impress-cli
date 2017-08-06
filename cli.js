@@ -2,13 +2,12 @@
 
 'use strict';
 
-require('colors');
-
 const os = require('os');
 const fs = require('fs');
 const ncp = require('ncp').ncp;
 const cp = require('child_process');
 const metasync = require('metasync');
+const concolor = require('concolor');
 const readline = require('readline');
 
 const isWin = !!process.platform.match(/^win/);
@@ -109,7 +108,7 @@ const commands = {
     console.log('  Applications: ');
     let i;
     for (i = 0; i < applications.length; i++) {
-      console.log('    ' + applications[i].green.bold);
+      console.log(concolor.info('    ' + applications[i]));
     }
     doExit();
   },
@@ -184,10 +183,10 @@ const commands = {
     }
 
     function startFailed() {
-      console.log(
-        'Failed to start Impress Application Server'.bold.red + '\n' +
-        ('See logs in ' + impressPath + '/log/ for details').bold.red
-      );
+      console.log(concolor.error(
+        'Failed to start Impress Application Server\n' +
+        'See logs in ' + impressPath + '/log/ for details'
+      ));
     }
 
     function finalize() {
@@ -232,7 +231,7 @@ const commands = {
         (err, stdout, stderr) => {
           const error = err || stderr;
           if (error) {
-            console.log(error.toString().red.bold);
+            console.log(concolor.error(error.toString()));
             callback();
           }
 
@@ -248,7 +247,7 @@ const commands = {
             if (force) command += '-9 ';
             execute(command + worker.pid, cb);
           }, (err) => {
-            if (err) console.log(err.toString().red.bold);
+            if (err) console.log(concolor.error(err.toString()));
             else console.log('Stopped');
             callback();
           });
@@ -340,13 +339,13 @@ const commands = {
       impressPath = parameters[1];
       fs.writeFileSync('./impress.link', impressPath);
     }
-    console.log('  Path: ' + impressPath.green.bold);
+    console.log(concolor.info('  Path: ' + impressPath));
     doExit();
   }
 
 };
 
-console.log(('Impress Application Server ' + pkgData.version).green.bold);
+console.log('Impress Application Server ' + concolor.info(pkgData.version));
 process.chdir(__dirname);
 
 // Parse command line
