@@ -9,14 +9,14 @@ if [ "$(uname -s)" = 'FreeBSD' ]; then
   chmod +x /etc/rc.d/impress
   ln -s /usr/local/bin/node /bin/node
   printf '#enable impress\nimpress_enable="YES"\n' >>  /etc/rc.conf
+elif [ -f /etc/debian_version ]; then
+  sudo update-rc.d impress defaults
 elif [ -n "$(command -v systemctl)" ]; then
   rm -f /etc/systemd/system/impress.service
   ln -f $(pwd)/bin/impress.service /etc/systemd/system/impress.service
   systemctl daemon-reload
   systemctl enable impress
   systemctl -l status impress
-elif [ -f /etc/debian_version ]; then
-  sudo update-rc.d impress defaults
 elif [ -f /etc/redhat-release ]; then
   chkconfig --add impress
   chkconfig impress on
