@@ -331,12 +331,12 @@ const commands = {
       console.log('Not implemented');
       doExit();
     } else if (parameters[1] === 'on') {
-      execute('./bin/install.sh', () => {
+      execute('sudo ./bin/install.sh', () => {
         console.log('Installed to autostart on system boot');
         doExit();
       });
     } else if (parameters[1] === 'off') {
-      execute('./bin/uninstall.sh', () => {
+      execute('sudo ./bin/uninstall.sh', () => {
         console.log('Uninstalled from autostart on system boot');
         doExit();
       });
