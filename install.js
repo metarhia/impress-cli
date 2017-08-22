@@ -25,7 +25,7 @@ function installService(
 ) {
   process.chdir(__dirname);
   execute('chmod +x ./bin/install.sh', () => {
-    execute('./bin/install.sh');
+    execute('sudo ./bin/install.sh');
   });
 }
 
