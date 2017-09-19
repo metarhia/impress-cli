@@ -1,5 +1,9 @@
 #!/bin/sh
 impress stop
+
+if [ -f /etc/init.d/ ]; then
+  sudo rm -f /etc/init.d/impress
+fi
 if [ -f /etc/debian_version ]; then
   sudo update-rc.d impress disable
 elif [ $(pidof systemd) -eq 1 ]; then
