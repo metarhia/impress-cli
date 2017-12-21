@@ -13,7 +13,7 @@ function execute(
   exec(cmd, (error, stdout, stderr) => {
     if (error) {
       console.error(concolor.error(error.toString()));
-      console.error(stderr);
+      console.error(concolor.error(stderr));
     } else {
       console.log(stdout);
     }
