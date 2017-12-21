@@ -10,9 +10,10 @@ function execute(
   cmd,
   callback
 ) {
-  exec(cmd, (error, stdout /* stderr */) => {
+  exec(cmd, (error, stdout, stderr) => {
     if (error) {
-      console.log(concolor.error(error.toString()));
+      console.error(concolor.error(error.toString()));
+      console.error(stderr);
     } else {
       console.log(stdout);
     }
