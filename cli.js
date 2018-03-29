@@ -61,11 +61,8 @@ if (pkgExists) {
 
 global.applications = [];
 
-function execute(
-  // Execute shell command displaying output and possible errors
-  cmd,
-  callback
-) {
+// Execute shell command displaying output and possible errors
+const execute = (cmd, callback) => {
   cp.exec(cmd, { cwd: __dirname }, (error, stdout /* stderr */) => {
     if (error) {
       console.log(concolor.error(error.toString()));
@@ -74,19 +71,17 @@ function execute(
     }
     if (callback) callback();
   });
-}
+};
 
-function doExit(
-  // Release readline on exit
-) {
+// Release readline on exit
+const doExit = () => {
   rl.close();
   process.chdir(curDir);
   process.exit(0);
-}
+};
 
-function showHelp(
-  // Command line commands list
-) {
+// Command line commands list
+const showHelp = () => {
   console.log(
     concolor.b('Syntax:\n') +
     concolor.white('  impress path <path>\n' +
@@ -103,15 +98,11 @@ function showHelp(
     '  impress new [name]')
   );
   doExit();
-}
+};
 
 // Commands
-//
 const commands = {
-
-  list(
-    // impress list
-  ) {
+  list() { // impress list
     console.log('  Applications: ');
     for (let i = 0; i < applications.length; i++) {
       console.log(concolor.info('    ' + applications[i]));
@@ -119,13 +110,22 @@ const commands = {
     doExit();
   },
 
-  add(
-    // impress add [path]
-  ) {
+  add() { // impress add [path]
     let applicationName = parameters[1];
-    if (applicationName) doAdd(); else doInput();
 
-    function doInput() {
+    const doAdd = () => {
+      const applicationPath = applicationsDir + '/' + applicationName;
+      const applicationLink = applicationPath + '/application.link';
+      fs.mkdirSync(applicationPath);
+      fs.writeFileSync(applicationLink, curDir);
+      console.log(
+        'Application "' + applicationName +
+        '" added with link to: ' + curDir
+      );
+      doExit();
+    };
+
+    const doInput = () => {
       rl.question('Enter application name: ', (answer) => {
         if (applications.indexOf(answer) === -1) {
           applicationName = answer;
@@ -136,41 +136,32 @@ const commands = {
           doInput();
         }
       });
-    }
+    };
 
-    function doAdd() {
-      const applicationPath = applicationsDir + '/' + applicationName;
-      const applicationLink = applicationPath + '/application.link';
-      fs.mkdirSync(applicationPath);
-      fs.writeFileSync(applicationLink, curDir);
-      console.log(
-        'Application "' + applicationName +
-        '" added with link to: ' + curDir
-      );
-      doExit();
-    }
-
+    if (applicationName) doAdd();
+    else doInput();
   },
 
-  remove(
-    // impress remove [name]
-  ) {
+  remove() { // impress remove [name]
     console.log('Not implemented');
     doExit();
   },
 
-  new(
-    // impress new [name]
-  ) {
+  new() { // impress new [name]
     console.log('Not implemented');
     doExit();
   },
 
-  start(
-    // impress start
-  ) {
+  start() { // impress start
 
-    function checkStarted(callback) {
+    const startFailed = () => {
+      console.log(concolor.error(
+        'Failed to start Impress Application Server\n' +
+        'See logs in ' + impressPath + '/log/ for details'
+      ));
+    };
+
+    const checkStarted = (callback) => {
       fs.readFile('./run.pid', (err, pid) => {
         if (err) {
           startFailed();
@@ -185,19 +176,12 @@ const commands = {
           callback();
         });
       });
-    }
+    };
 
-    function startFailed() {
-      console.log(concolor.error(
-        'Failed to start Impress Application Server\n' +
-        'See logs in ' + impressPath + '/log/ for details'
-      ));
-    }
-
-    function finalize() {
+    const finalize = () => {
       fs.unlink('./run.pid');
       doExit();
-    }
+    };
 
     if (isWin) {
       execute(
@@ -215,13 +199,9 @@ const commands = {
         }, 2000);
       });
     }
-
   },
 
-  stop(
-    // impress stop
-    callback
-  ) {
+  stop(callback) { // impress stop
     callback = callback || doExit;
 
     let force = false;
@@ -232,44 +212,43 @@ const commands = {
     if (isWin) {
       console.log('Not implemented');
       callback();
-    } else {
-      cp.exec('ps -A | awk \'{if ($4 == "impress") print $1, $5}\'',
-        (err, stdout, stderr) => {
-          const error = err || stderr;
-          if (error) {
-            console.log(concolor.error(error.toString()));
-            callback();
-          }
-
-          const processes = stdout.toString()
-            .split('\n')
-            .filter((line) => line !== '')
-            .map((line) => {
-              const parsedLine = line.split(' ');
-              return { pid: parsedLine[0], workerId: parsedLine[1] };
-            })
-            .filter((parsedLine) => parsedLine.workerId === 'srv');
-
-          metasync.series(processes, (worker, cb) => {
-            let command = 'kill ';
-            if (force) command += '-9 ';
-            execute(command + worker.pid, cb);
-          }, (err) => {
-            if (err) {
-              console.log(concolor.error(err.toString()));
-            } else {
-              console.log('Stopped');
-            }
-            callback();
-          });
-        }
-      );
+      return;
     }
+    cp.exec('ps -A | awk \'{if ($4 == "impress") print $1, $5}\'',
+      (err, stdout, stderr) => {
+        const error = err || stderr;
+        if (error) {
+          console.log(concolor.error(error.toString()));
+          callback();
+          return;
+        }
+
+        const processes = stdout.toString()
+          .split('\n')
+          .filter((line) => line !== '')
+          .map((line) => {
+            const parsedLine = line.split(' ');
+            return { pid: parsedLine[0], workerId: parsedLine[1] };
+          })
+          .filter((parsedLine) => parsedLine.workerId === 'srv');
+
+        metasync.series(processes, (worker, cb) => {
+          let command = 'kill ';
+          if (force) command += '-9 ';
+          execute(command + worker.pid, cb);
+        }, (err) => {
+          if (err) {
+            console.log(concolor.error(err.toString()));
+          } else {
+            console.log('Stopped');
+          }
+          callback();
+        });
+      }
+    );
   },
 
-  restart(
-    // impress restart
-  ) {
+  restart() { // impress restart
     if (isWin) {
       console.log('Not implemented');
       doExit();
@@ -278,9 +257,7 @@ const commands = {
     }
   },
 
-  status(
-    // impress status
-  ) {
+  status() { // impress status
     if (isWin) {
       console.log('Not implemented');
       doExit();
@@ -295,9 +272,7 @@ const commands = {
     }
   },
 
-  version(
-    // impress version
-  ) {
+  version() { // impress version
     console.log(
       ' Impress AS: ' + pkgData.version + '\n' +
       '    Node.js: ' + process.versions.node + '\n' +
@@ -311,9 +286,7 @@ const commands = {
     doExit();
   },
 
-  update(
-    // impress update
-  ) {
+  update() { // impress update
     if (isWin) {
       console.log('Not implemented');
       doExit();
@@ -324,9 +297,7 @@ const commands = {
     }
   },
 
-  autostart(
-    // impress autostart
-  ) {
+  autostart() { // impress autostart
     if (isWin) {
       console.log('Not implemented');
       doExit();
@@ -345,9 +316,7 @@ const commands = {
     }
   },
 
-  path(
-    // impress autostart
-  ) {
+  path() { // impress autostart
     if (parameters[1]) {
       impressPath = parameters[1];
       fs.writeFileSync('./impress.link', impressPath);
@@ -362,7 +331,6 @@ console.log('Impress Application Server ' + concolor.info(pkgData.version));
 process.chdir(__dirname);
 
 // Parse command line
-//
 if (parameters.length < 3) {
   showHelp();
 } else {
