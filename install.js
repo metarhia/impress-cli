@@ -5,11 +5,8 @@ const concolor = require('concolor');
 
 const isWin = !!process.platform.match(/^win/);
 
-function execute(
-  // Execute shell command displaying output and possible errors
-  cmd,
-  callback
-) {
+// Execute shell command displaying output and possible errors
+const execute = (cmd, callback) => {
   exec(cmd, (error, stdout, stderr) => {
     if (error) {
       console.error(concolor.error(error.toString()));
@@ -19,16 +16,15 @@ function execute(
     }
     if (callback) callback();
   });
-}
+};
 
-function installService(
-  // Install Impress Application Server as a service
-) {
+// Install Impress Application Server as a service
+const installService = () => {
   process.chdir(__dirname);
   execute('chmod +x ./bin/install.sh', () => {
     execute('sudo ./bin/install.sh');
   });
-}
+};
 
 console.log(concolor.info('Impress Application Server CLI'));
 
