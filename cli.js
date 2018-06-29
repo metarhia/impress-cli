@@ -203,12 +203,7 @@ const commands = {
 
   stop(callback) { // impress stop
     callback = callback || doExit;
-
-    let force = false;
-    if (['-f', '--force'].indexOf(parameters[1]) !== -1) {
-      force = true;
-    }
-
+    const force = ['-f', '--force'].includes(parameters[1]);
     if (isWin) {
       console.log('Not implemented');
       callback();
@@ -223,14 +218,17 @@ const commands = {
           return;
         }
 
-        const processes = stdout.toString()
+        let processes = stdout.toString()
           .split('\n')
-          .filter((line) => line !== '')
-          .map((line) => {
+          .filter(line => line !== '')
+          .map(line => {
             const parsedLine = line.split(' ');
             return { pid: parsedLine[0], workerId: parsedLine[1] };
-          })
-          .filter((parsedLine) => parsedLine.workerId === 'srv');
+          });
+
+        if (!force) processes = processes.filter(
+          parsedLine => parsedLine.workerId === 'srv'
+        );
 
         metasync.series(processes, (worker, cb) => {
           let command = 'kill ';
