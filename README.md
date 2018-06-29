@@ -4,8 +4,6 @@ This module is a part of [Impress](https://github.com/metarhia/impress-cli)
 Application Server for [node.js](http://nodejs.org). It is not separate
 library and will be installed automatically when needed.
 
-[![bitHound](https://www.bithound.io/github/metarhia/impress-cli/badges/score.svg)](https://www.bithound.io/github/metarhia/impress-cli)
-[![Dependencies](https://www.bithound.io/github/metarhia/impress-cli/badges/dependencies.svg)](https://www.bithound.io/github/metarhia/impress-cli/master/dependencies/npm)
 [![Codacy Badge](https://www.codacy.com/project/badge/4c2d13d88de14535889db48b25c8e054)](https://www.codacy.com/app/metarhia/impress-cli)
 [![NPM Version](https://badge.fury.io/js/impress-cli.svg)](https://badge.fury.io/js/impress-cli)
 [![NPM Downloads/Month](https://img.shields.io/npm/dm/impress-cli.svg)](https://www.npmjs.com/package/impress-cli)
