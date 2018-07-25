@@ -179,8 +179,9 @@ const commands = {
     };
 
     const finalize = () => {
-      fs.unlink('./run.pid');
-      doExit();
+      fs.unlink('./run.pid', () => {
+        doExit();
+      });
     };
 
     if (isWin) {
