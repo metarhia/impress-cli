@@ -1,6 +1,6 @@
 {
   "name": "impress-cli",
-  "version": "0.4.28",
+  "version": "0.4.29",
   "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
   "description": "Impress Application Server Command line interface",
   "license": "MIT",
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "concolor": "^0.1.8",
-    "metasync": "^0.3.28",
+    "metasync": "^0.3.29",
     "ncp": "^2.0.0"
   },
   "devDependencies": {
