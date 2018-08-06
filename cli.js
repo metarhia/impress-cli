@@ -19,9 +19,12 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-const nodePar = (
-  '--stack-trace-limit=1000 --allow-natives-syntax --max_old_space_size=2048'
-);
+const nodePar = [
+  ['stack-trace-limit', 1000],
+  ['allow-natives-syntax'],
+  ['max_old_space_size', 2048]
+].map(par => `--${par.join('=')}`).join(' ');
+
 
 const linkFileName = __dirname + '/impress.link';
 const existsLink = fs.existsSync(linkFileName);
@@ -63,7 +66,8 @@ global.applications = [];
 
 // Execute shell command displaying output and possible errors
 const execute = (cmd, callback) => {
-  cp.exec(cmd, { cwd: __dirname }, (error, stdout /* stderr */) => {
+  cp.exec(cmd, { cwd: __dirname }, (error, stdout, stderr) => {
+    error = error || stderr;
     if (error) {
       console.log(concolor.error(error.toString()));
     } else {
@@ -127,7 +131,7 @@ const commands = {
 
     const doInput = () => {
       rl.question('Enter application name: ', (answer) => {
-        if (applications.indexOf(answer) === -1) {
+        if (!applications.includes(answer)) {
           applicationName = answer;
           doAdd();
           doExit();
