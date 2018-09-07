@@ -12,7 +12,7 @@ library and will be installed automatically when needed.
 ## Links
 
   - Impress on GitHub: https://github.com/metarhia/impress
-  - Inpress on NPM: https://www.npmjs.com/package/impress
+  - Impress on NPM: https://www.npmjs.com/package/impress
 
 ## Contributors
 
