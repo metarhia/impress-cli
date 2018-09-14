@@ -102,6 +102,26 @@ const showHelp = () => {
   doExit();
 };
 
+const listImpressProcesses = (callback) =>
+  cp.exec('ps -A | awk \'{if ($4 == "impress") print $1, $5}\'',
+    (err, stdout, stderr) => {
+      const error = err || stderr;
+      if (error) {
+        console.log(concolor.error(err.toString()));
+        callback(error);
+        return;
+      }
+
+      const processes = stdout.toString()
+        .split('\n')
+        .filter(line => line !== '')
+        .map(line => {
+          const parsedLine = line.split(' ');
+          return { pid: parsedLine[0], workerId: parsedLine[1] };
+        });
+      callback(null, processes);
+    });
+
 // Commands
 const commands = {
   list() { // impress list
@@ -155,7 +175,6 @@ const commands = {
   },
 
   start() { // impress start
-
     const startFailed = () => {
       console.log(concolor.error(
         'Failed to start Impress Application Server\n' +
@@ -167,7 +186,8 @@ const commands = {
       fs.readFile('./run.pid', (err, pid) => {
         if (err) {
           startFailed();
-          return callback();
+          callback();
+          return;
         }
 
         cp.exec('kill -0 ' + pid, (err) => {
@@ -212,41 +232,27 @@ const commands = {
       callback();
       return;
     }
-    cp.exec('ps -A | awk \'{if ($4 == "impress") print $1, $5}\'',
-      (err, stdout, stderr) => {
-        const error = err || stderr;
-        if (error) {
-          console.log(concolor.error(error.toString()));
-          callback();
-          return;
-        }
 
-        let processes = stdout.toString()
-          .split('\n')
-          .filter(line => line !== '')
-          .map(line => {
-            const parsedLine = line.split(' ');
-            return { pid: parsedLine[0], workerId: parsedLine[1] };
-          });
-
-        if (!force) processes = processes.filter(
-          parsedLine => parsedLine.workerId === 'srv'
-        );
-
-        metasync.series(processes, (worker, cb) => {
-          let command = 'kill ';
-          if (force) command += '-9 ';
-          execute(command + worker.pid, cb);
-        }, (err) => {
-          if (err) {
-            console.log(concolor.error(err.toString()));
-          } else {
-            console.log('Stopped');
-          }
-          callback();
-        });
+    listImpressProcesses((err, processes) => {
+      if (err) {
+        callback();
+        return;
       }
-    );
+
+      if (!force) processes = processes.filter(
+        parsedLine => parsedLine.workerId === 'srv'
+      );
+
+      metasync.series(processes, (worker, cb) => {
+        let command = 'kill ';
+        if (force) command += '-9 ';
+        execute(command + worker.pid, cb);
+      }, (err) => {
+        if (err) console.log(concolor.error(err.toString()));
+        else console.log('Stopped');
+        callback();
+      });
+    });
   },
 
   restart() { // impress restart
@@ -262,15 +268,28 @@ const commands = {
     if (isWin) {
       console.log('Not implemented');
       doExit();
-    } else {
-      execute(
-        'ps aux | grep "impress\\|%CPU" | grep -v "grep\\|status"',
-        () => {
-          console.log('Stopped');
-          doExit();
-        }
-      );
+      return;
     }
+
+    listImpressProcesses((err, processes) => {
+      if (err) {
+        doExit();
+        return;
+      }
+
+      const pids = processes.map(process => process.pid);
+      if (pids.length) {
+        cp.exec(`ps up ${pids.join(' ')}`, (err, stdout, stderr) => {
+          const error = err || stderr;
+          if (error) console.log(concolor.error(error.toString()));
+          else console.log(stdout.toString() + '\nRunning');
+          doExit();
+        });
+      } else {
+        console.log('Stopped');
+        doExit();
+      }
+    });
   },
 
   version() { // impress version
