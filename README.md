@@ -11,13 +11,13 @@ library and will be installed automatically when needed.
 
 ## Links
 
-  - Impress on GitHub: https://github.com/metarhia/impress
-  - Impress on NPM: https://www.npmjs.com/package/impress
+- Impress on GitHub: https://github.com/metarhia/impress
+- Impress on NPM: https://www.npmjs.com/package/impress
 
 ## Contributors
 
-  - Timur Shemsedinov (marcusaurelius) &lt;timur.shemsedinov@gmail.com&gt;
-  - See github for full [contributors list](https://github.com/metarhia/impress-cli/graphs/contributors)
+- Timur Shemsedinov (marcusaurelius) &lt;timur.shemsedinov@gmail.com&gt;
+- See github for full [contributors list](https://github.com/metarhia/impress-cli/graphs/contributors)
 
 ## License
 

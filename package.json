@@ -27,7 +27,8 @@
     "install": "node install.js",
     "npm": "npm link npm",
     "test": "npm run lint",
-    "lint": "eslint ."
+    "lint": "eslint . && prettier -c \"**/*.js\" \"**/*.json\" \"**/*.md\" \".*rc\" \"**/*.yml\"",
+    "fmt": "prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\" \".*rc\" \"**/*.yml\""
   },
   "engines": {
     "node": ">=6.0.0"
@@ -38,6 +39,9 @@
     "ncp": "^2.0.0"
   },
   "devDependencies": {
-    "eslint": "^4.19.1"
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^3.6.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "prettier": "1.16.x"
   }
 }
